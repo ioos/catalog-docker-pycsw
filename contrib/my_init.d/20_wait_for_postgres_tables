@@ -1,0 +1,13 @@
+#!/bin/bash
+set -x
+export PGPASSWORD=$POSTGRES_PASSWORD
+run_psql_ckan="psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER ckan -qAt -c"
+while true; do
+    result=$($run_psql_ckan "SELECT 1 from information_schema.tables WHERE table_name = 'harvest_object_extra'")
+    if [[ "$result" == '1' ]]; then
+        break;
+    else
+        echo 'Waiting for all ckan tables to initialize'
+        sleep 20
+    fi
+done
